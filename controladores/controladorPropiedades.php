@@ -16,7 +16,21 @@ class PropiedadesController {
     }
 
     public function listarPropiedades() {
-        $propiedades = $this->modelo->getPropiedades();
+        $columna = $_GET['columna'] ?? 'id_propiedad'; 
+        $orden = strtolower($_GET['orden'] ?? 'asc');
+        $columnasValidas = ['id_propiedad', 'nombre', 'precio', 'categoria', 'talle', 'cantidad'];
+        
+        if (!in_array($columna,  $columnasValidas)) {
+            $this->vista->response("Columna invalida", 400);
+            return;
+        }
+
+        if ($orden != 'asc' && $orden != 'desc') {
+            $this->vista->response("El orden debe ser 'asc' o 'desc'", 400);
+            return;
+        }
+
+        $propiedades = $this->modelo->getPropiedades($columna, $orden);
          if ($propiedades) {
             $this->vista->response($propiedades, 200);
         } else {
@@ -24,60 +38,15 @@ class PropiedadesController {
         }
     }
 
-    public function listarPropiedadesPorHabitaciones() {
-        $sentido = $_GET['sentido'] ?? 'ASC';
-        $propiedades = $this->modelo->getPropiedadesOrdenHabitaciones($sentido);
-        $this->vista->response($propiedades, 200);
-    }
-
-    public function listarPropiedadesPorMetrosCuadrados() {
-        $metros = $_GET['metros_cuadrados'] ?? null ;
-
-        if ($metros === null) {
-            $this->vista->response("Debes enviar ?metros_cuadrados=valor", 400);
-            return;
-        }
-
-        $propiedades = $this->modelo->getPropiedadesPorMetrosCuadrados($metros);
-        if ($propiedades) {
+    public function listarPropiedad() {
+        $id_propiedad = $_GET['id_propiedad'] ; 
+        $propiedades = $this->modelo->getPropiedadPorID($id_propiedad);
+         if ($propiedades) {
             $this->vista->response($propiedades, 200);
         } else {
-            $this->vista->response("No hay propiedades de mas de $metros metros cuadrados", 404);
+            $this->vista->response("No hay propiedad con ese ID", 404);
         }
     }
-
-    public function listarPropiedadesPorPropietario() {
-        $id_propietario = $_GET['id_propietario_fk'] ?? null ;
-      
-        if ($id_propietario === null) {
-            $this->vista->response("Debes enviar ?id_propietario_fk=ID", 400);
-            return;
-        }
-
-        $propiedades = $this->modelo->getPropiedadesPorPropietario($id_propietario);
-        if ($propiedades) {
-            $this->vista->response($propiedades, 200);
-        } else {
-            $this->vista->response("No hay propiedades de ese propietario",  404);
-        }
-    }
-
-    public function listarPropiedadesPorTipoPropiedad() {
-        $tipo_propiedad = $_GET['tipo_propiedad'] ?? null ;
-
-        if ($tipo_propiedad === null) {
-            $this->vista->response("Debes enviar un tipo de propiedad)", 400);
-            return;
-        }
-        $propiedades = $this->modelo->getPropiedadesPorTipo($tipo_propiedad);
-        
-        if($propiedades) {
-            $this->vista->response($propiedades, 200);
-        } else {
-            $this->vista->response("No hay propiedades de ese tipo" ,  404);
-        }
-    }
-
 
     public function updatePropiedad($params) {
         $id = $params[':ID'];
