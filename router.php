@@ -1,11 +1,12 @@
 <?php
-require_once './app/controladores/controladorPropietario.php';
+require_once './controladores/controladorPropietario.php';
 require_once './libs/route.php';
 
 $router = new Router();
 
 $router->addRoute('propietarios/:id', 'GET', 'PropietarioController', 'obtenerPropietarioPorId');
 $router->addRoute('propietarios', 'POST', 'PropietarioController', 'agregarPropietario');
+$router->addRoute('propietarios', 'GET', 'PropietarioController', 'filtrarPropietarios');
 $router->addRoute('propiedades', 'GET', 'PropiedadesController', 'listarPropiedadesv');
 $router->addRoute('propiedades/:id', 'PUT', 'PropiedadesController', 'editarPropiedad');
 

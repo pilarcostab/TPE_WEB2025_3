@@ -1,6 +1,6 @@
 <?php
-require_once './app/modelos/modeloPropieatio.php';
-require_once './app/vistas/vistaJSON.php';
+require_once './modelos/modeloPropietario.php';
+require_once './vistas/vistaJSON.php';
 
 class PropietarioController {
     private $modelo;
@@ -31,12 +31,20 @@ class PropietarioController {
             return $this->vista->response(" Faltan completar datos obligatorios", 400);
         }
 
-        $this->modelo->agregarPropietario($id_propiedad, $nombre, $telefono, $mail);
+        $this->modelo->agregarPropietario($nombre, $telefono, $mail);
         return $this->vista->response("Propietario agregado correctamente", 201);
     }
 
+    public function filtrarPropietarios($req, $res) {
+        $filtros = [
+            'nombre' => $req->query->nombre ?? null,
+            'telefono' => $req->query->telefono ?? null,
+            'mail' => $req->query->mail ?? null
+        ];
 
+        $resultado = $this->modelo->filtrarPropietarios($filtros);
 
-
+        return $this->vista->response($resultado, 200);
+    }
 
 }

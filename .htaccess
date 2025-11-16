@@ -1,6 +1,10 @@
-  RewriteCond %{REQUEST_FILENAME} -d
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
-    RewriteRule \.(?:css|js|jpe?g|gif|png)$ - [L]
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-    RewriteRule ^api/(.*)$ api_router.php?resource=$1 [QSA,L]
+    # Si el archivo o carpeta existe, no reescribo
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Redirige todo a router.php
+    RewriteRule ^(.*)$ router.php?resource=$1 [QSA,L]
 </IfModule>
