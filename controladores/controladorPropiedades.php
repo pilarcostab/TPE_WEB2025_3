@@ -18,21 +18,30 @@ class PropiedadesController {
     public function listarPropiedades() {
         $columna = $_GET['columna'] ?? 'id_propiedad'; 
         $orden = strtolower($_GET['orden'] ?? 'asc');
+        $pagina = $_GET['pagina'] ?? 1;
+        $limite = $_GET['limite'] ?? 10;
+       
         $columnasValidas = ['id_propiedad', 'id_propietario_fk', 'tipo_propiedad', 'ubicacion', 'habitaciones', 'metros_cuadrados'];
         
         if (!in_array($columna,  $columnasValidas)) {
             $this->vista->response("Columna invalida", 400);
             return;
         }
-
         if ($orden != 'asc' && $orden != 'desc') {
             $this->vista->response("El orden debe ser 'asc' o 'desc'", 400);
             return;
         }
-
-        $propiedades = $this->modelo->getPropiedades($columna, $orden);
+        if ($pagina !== null && $limite !== null){
+            $offset = ($pagina - 1) * $limite ; 
+            $propiedades = $this->modelo->getPropiedadesPaginadas($columna, $orden, $limite, $offset);
+            $total = $this->modelo->contarPropiedades();
+            $response = ["Página" => (int)$pagina, "total_paginas" => ceil($total / $limite), "Propiedades" => $propiedades];
+            } else {
+                $propiedades = $this->modelo->getPropiedades($columna, $orden);
+                $response = $propiedades; 
+            }
          if ($propiedades) {
-            $this->vista->response($propiedades, 200);
+            $this->vista->response($response, 200);
         } else {
             $this->vista->response("No hay propiedades", 404);
         }
