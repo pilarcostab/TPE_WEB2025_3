@@ -1,6 +1,6 @@
 <?php
-require_once './app/modelos/modeloPropiedades.php';
-require_once './app/vistas/vistaJSON.php';
+require_once './modelos/modeloPropiedades.php';
+require_once './vistas/vistaJSON.php';
 
 class PropiedadesController {
     private $modelo;
@@ -18,7 +18,7 @@ class PropiedadesController {
     public function listarPropiedades() {
         $columna = $_GET['columna'] ?? 'id_propiedad'; 
         $orden = strtolower($_GET['orden'] ?? 'asc');
-        $columnasValidas = ['id_propiedad', 'nombre', 'precio', 'categoria', 'talle', 'cantidad'];
+        $columnasValidas = ['id_propiedad', 'id_propietario_fk', 'tipo_propiedad', 'ubicacion', 'habitaciones', 'metros_cuadrados'];
         
         if (!in_array($columna,  $columnasValidas)) {
             $this->vista->response("Columna invalida", 400);
@@ -38,22 +38,21 @@ class PropiedadesController {
         }
     }
 
-    public function listarPropiedad() {
-        $id_propiedad = $_GET['id_propiedad'] ; 
-        $propiedades = $this->modelo->getPropiedadPorID($id_propiedad);
-         if ($propiedades) {
-            $this->vista->response($propiedades, 200);
-        } else {
-            $this->vista->response("No hay propiedad con ese ID", 404);
-        }
+    public function listarPropiedad($request, $response) {
+    $id = $request->params->id;
+
+    $propiedad = $this->modelo->getPropiedadPorID($id);
+
+    if ($propiedad) {
+        $this->vista->response($propiedad, 200);
+    } else {
+        $this->vista->response("No hay propiedad con ese ID", 404);
     }
+}
 
-    public function updatePropiedad($params) {
-        $id = $params[':ID'];
-
-        // Verificar si existe
+    public function updatePropiedad($request, $response) {
+        $id = $request->params->id;
         $propiedad = $this->modelo->getPropiedadPorID($id);
-
         if (!$propiedad) {
             $this->vista->response("La propiedad con ID $id no existe", 404);
             return;
