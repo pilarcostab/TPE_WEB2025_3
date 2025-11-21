@@ -33,8 +33,5 @@ BASE URL http://localhost/TPE_WEB2025_3
 -Filtrar propietarios por cualquier campo:
 {base_url}/propietarios?telefono=1234
 
-
-
-
-
-
+-Paginado (GET):
+{base_url}/propiedades?pagina=1&limite=3

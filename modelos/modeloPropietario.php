@@ -40,4 +40,22 @@ class modeloPropietario {
         $query->execute($params);
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getPropietariosPaginados($limite, $offset) {
+        $sql = "SELECT * FROM propietarios LIMIT :limite OFFSET :offset";
+        $query = $this->db->prepare($sql);
+
+        $query->bindValue(':limite', (int)$limite, PDO::PARAM_INT);
+        $query->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function contarPropietarios() {
+        $query = $this->db->prepare("SELECT COUNT(*) AS total FROM propietarios");
+        $query->execute();
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+        return (int)$row['total'];
+    }
 }

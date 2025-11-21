@@ -47,4 +47,31 @@ class PropietarioController {
         return $this->vista->response($resultado, 200);
     }
 
+    public function listarPropietarios($req, $res) {
+        $pagina = $req->query->pagina ?? 1;
+        $limite = $req->query->limite ?? 10;
+
+        if ($pagina < 1 || $limite < 1) {
+            return $this->vista->response("Parámetros de paginado inválidos", 400);
+        }
+
+        $offset = ($pagina - 1) * $limite;
+
+        $propietarios = $this->modelo->getPropietariosPaginados($limite, $offset);
+        $total = $this->modelo->contarPropietarios();
+
+        if (!$propietarios) {
+            return $this->vista->response("No hay propietarios registrados", 404);
+        }
+
+        $response = [
+            "pagina" => (int)$pagina,
+            "total_paginas" => ceil($total / $limite),
+            "propietarios" => $propietarios
+        ];
+
+        return $this->vista->response($response, 200);
+    }
+
+
 }
